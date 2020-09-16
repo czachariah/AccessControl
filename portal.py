@@ -29,7 +29,14 @@ def main():
                 AddUser(sys.argv[2], "EMPTY_STRING")
 
     elif sys.argv[1] == "Authenticate":
-        print("Authenticate Command!")
+        if len(sys.argv) < 3:
+            print("\nSTATUS: ERROR! Username missing.\n")
+            exit()
+        else:
+            if len(sys.argv) == 4:
+                Authenticate(sys.argv[2], sys.argv[3])
+            else:
+                Authenticate(sys.argv[2], "EMPTY_STRING")
 
     elif sys.argv[1] == "SetDomain":
         print("SetDomain Command!")
@@ -57,7 +64,7 @@ def main():
 # method used to add new Users
 def AddUser(username, password):
     if checkForUser(username):
-        print("\nSTATUS: ERROR! User already exists.\n")
+        print("\nSTATUS: FAILURE! User already exists.\n")
     else:
         # user not found in the data, so now add the user
         if insertNewUser(username, password):
@@ -149,6 +156,47 @@ def insertNewUser(username, password):
             f.write("\n")
         f.close()
         return True
+
+
+# method used to add new Users
+def Authenticate(username, password):
+    if checkForUser(username):
+        if checkUserAndPass(username, password):
+            print("\nSTATUS: SUCCESS! User authenticated.\n")
+        else:
+            print("\nSTATUS: FAILURE! Password incorrect.\n")
+
+    else:
+        print("\nSTATUS: FAILURE! User not found.\n")
+
+
+# method used to check the username and password for a match
+def checkUserAndPass(username, password):
+    # look for UsersData.txt file
+    dir_name = os.path.dirname(os.path.abspath(__file__))
+    user_data = os.path.join(dir_name, "UsersData" + "." + "txt")
+
+    if os.path.exists(user_data):
+        # separate the lines into words and store each word into a list
+        dataList = list()
+        try:
+            file = open("UsersData.txt", "r")
+            for line in file:
+                for word in line.replace("\r", "").replace("\n", "").split():
+                    dataList.append(word)
+        except IOError:
+            print("\nSTATUS: ERROR obtaining user data.\n")
+            exit()
+        file.close()
+
+        for x in range(0, len(dataList), 2):
+            # user found in the data, check if the password matches
+            if (dataList[x]) == str(username) and (dataList[x+1]) == str(password):
+                return True
+        return False
+    else:
+        print("\nSTATUS: ERROR obtaining user data.\n")
+        exit()
 
 
 # runs the program by calling the main() method
