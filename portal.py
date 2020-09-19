@@ -14,16 +14,16 @@ import os
 def main():
     # make sure that the correct number of arguments are given
     if len(sys.argv) < 2:
-        print("\nSTATUS: ERROR! Please include a command and the proper arguments.\n")
+        print("Error: Please include a command and the proper arguments.")
         exit()
 
     # make sure the command given is valid
     if sys.argv[1] == "AddUser":
         if len(sys.argv) < 3:
-            print("\nSTATUS: ERROR! Username and Password missing.\n")
+            print("Error: Username and Password missing.")
             exit()
         elif len(sys.argv) > 4:
-            print("\nSTATUS: ERROR! Please make sure there are no spaces in the username or password.\n")
+            print("Error: Please make sure there are no spaces in the username or password.")
             exit()
         else:
             if len(sys.argv) == 4:
@@ -33,10 +33,10 @@ def main():
 
     elif sys.argv[1] == "Authenticate":
         if len(sys.argv) < 3:
-            print("\nSTATUS: ERROR! Username and Password missing.\n")
+            print("Error: Username and Password missing.")
             exit()
         elif len(sys.argv) > 4:
-            print("\nSTATUS: ERROR! Please make sure there are no spaces in the username or password.\n")
+            print("Error: Please make sure there are no spaces in the username or password.")
             exit()
         else:
             if len(sys.argv) == 4:
@@ -46,45 +46,45 @@ def main():
 
     elif sys.argv[1] == "SetDomain":
         if len(sys.argv) < 3:
-            print("\nSTATUS: ERROR! Username and Domain missing.\n")
+            print("Error: Username and Domain missing.")
             exit()
         elif len(sys.argv) > 4:
-            print("\nSTATUS: ERROR! Please check the input and try again.\n")
+            print("Error: Please check the input and try again.")
             exit()
         elif len(sys.argv) == 3:
-            print("\nSTATUS: ERROR! Missing domain.\n")
+            print("Error: Missing domain.")
             exit()
         else:
             set_domain(sys.argv[2], sys.argv[3])
 
     elif sys.argv[1] == "DomainInfo":
         if len(sys.argv) < 3:
-            print("\nSTATUS: ERROR! Domain missing.\n")
+            print("Error: Domain missing.")
             exit()
         elif len(sys.argv) > 3:
-            print("\nSTATUS: ERROR! Please check the input and try again.\n")
+            print("Error: Please check the input and try again.")
         else:
             get_domain_users(sys.argv[2])
 
     elif sys.argv[1] == "SetType":
         if len(sys.argv) < 3:
-            print("\nSTATUS: ERROR! Domain and Type missing.\n")
+            print("Error: Domain and Type missing.")
             exit()
         elif len(sys.argv) > 4:
-            print("\nSTATUS: ERROR! Please check inputs and try again.\n")
+            print("Error: Please check inputs and try again.")
             exit()
         elif len(sys.argv) == 3:
-            print("\nSTATUS: ERROR! Type missing.\n")
+            print("Error: Type missing.")
             exit()
         else:
             set_type(sys.argv[2], sys.argv[3])
 
     elif sys.argv[1] == "TypeInfo":
         if len(sys.argv) < 3:
-            print("\nSTATUS: ERROR! Type missing.\n")
+            print("Error: Type missing.")
             exit()
         elif len(sys.argv) > 3:
-            print("\nSTATUS: ERROR! Please check the input and try again.\n")
+            print("Error: Please check the input and try again.")
         else:
             get_type_objects(sys.argv[2])
 
@@ -95,20 +95,20 @@ def main():
         print("CanAccess Command!")
 
     else:
-        print("\nSTATUS: ERROR! Please use a proper command.\n")
+        print("Error: Please use a proper command.")
         exit()
 
 
 # method used to add new users
 def add_user(username, password):
     if does_user_exist(username):
-        print("\nSTATUS: ERROR! User already exists.\n")
+        print("Error: User already exists.")
     else:
         # user not found in the data, so now add the user
         if update_user_data(username, password):
-            print("\nSTATUS: SUCCESS! User added.\n")
+            print("Success")
         else:
-            print("\nSTATUS: ERROR! Problems adding new user.\n")
+            print("Error: Problems adding new user.")
 
 
 # this method will get user data
@@ -129,7 +129,7 @@ def get_user_data():
             file.close()
             return data_list
         except IOError:
-            print("\nSTATUS: ERROR obtaining user data.\n")
+            print("Error: Problems obtaining user data.")
             exit()
     else:
         try:
@@ -137,7 +137,7 @@ def get_user_data():
             f.close()
             return data_list
         except IOError:
-            print("\nSTATUS: ERROR obtaining user data.\n")
+            print("Error: Problems obtaining user data.")
             exit()
 
 
@@ -177,7 +177,7 @@ def update_user_data(username, password):
             f.write("\n")
         f.close()
     except IOError:
-        print("\nSTATUS: ERROR obtaining user data.\n")
+        print("Error: Problems obtaining user data.")
         exit()
     return True
 
@@ -186,12 +186,12 @@ def update_user_data(username, password):
 def authenticate(username, password):
     if does_user_exist(username):
         if check_user_and_pass(username, password):
-            print("\nSTATUS: SUCCESS! User authenticated.\n")
+            print("Success")
         else:
-            print("\nSTATUS: ERROR! Password incorrect.\n")
+            print("Error: Password incorrect.")
 
     else:
-        print("\nSTATUS: ERROR! User not found.\n")
+        print("Error: User not found.")
 
 
 # method used to check the username and password for a match
@@ -216,22 +216,22 @@ def set_domain(username, domain):
         if not data_list:
             # there is no domain data, add first entry
             add_new_domain(username, domain)
-            print("\nSTATUS: SUCCESS! User added to domain.\n")
+            print("Success")
         else:
             # existing data, find domain or make new one
             if does_domain_exist(domain):
                 # user and domain exist
                 if check_if_user_in_domain(username, domain):
-                    print("\nSTATUS: SUCCESS! User added to domain.\n")
+                    print("Success")
                 else:
                     insert_user_into_domain(username, domain)
-                    print("\nSTATUS: SUCCESS! User added to domain.\n")
+                    print("Success")
             else:
                 # there is no domain entry for, so update it
                 add_new_domain(username, domain)
-                print("\nSTATUS: SUCCESS! User added to domain.\n")
+                print("Success")
     else:
-        print("\nSTATUS: ERROR! User not found.\n")
+        print("Error: User not found.")
 
 
 # method that get domain data
@@ -252,7 +252,7 @@ def get_domain_data():
             file.close()
             return data_list
         except IOError:
-            print("\nSTATUS: ERROR obtaining domain data.\n")
+            print("Error: Problems obtaining domain data.")
             exit()
     else:
         try:
@@ -260,7 +260,7 @@ def get_domain_data():
             f.close()
             return data_list
         except IOError:
-            print("\nSTATUS: ERROR obtaining domain data.\n")
+            print("Error: Problems obtaining domain data.")
             exit()
 
 
@@ -297,7 +297,7 @@ def add_new_domain(username, domain):
             f.write("\n")
         f.close()
     except IOError:
-        print("\nSTATUS: ERROR obtaining domain data.\n")
+        print("Error: Problems obtaining domain data.")
         exit()
     return True
 
@@ -402,7 +402,7 @@ def update_domain_data(data):
             f.write("\n")
         f.close()
     except IOError:
-        print("\nSTATUS: ERROR obtaining domain data.\n")
+        print("Error: Problems obtaining domain data.")
         exit()
     return True
 
@@ -442,20 +442,20 @@ def set_type(object_name, type_name):
     if not data_list:
         # there is no domain data, add first entry
         add_new_type(object_name, type_name)
-        print("\nSTATUS: SUCCESS! Type updated.\n")
+        print("Success")
     else:
         # existing data, find domain or make new one
         if does_type_exist(type_name):
             # type exists
             if check_if_object_in_type(object_name, type_name):
-                print("\nSTATUS: SUCCESS! Type updated.\n")
+                print("Success")
             else:
                 insert_object_into_type(object_name, type_name)
-                print("\nSTATUS: SUCCESS! Type updated.\n")
+                print("Success")
         else:
             # there is no type entry, so add it
             add_new_type(object_name, type_name)
-            print("\nSTATUS: SUCCESS! Type updated.\n")
+            print("Success")
 
 
 # method will be used in order to get data about Types
@@ -476,7 +476,7 @@ def get_type_data():
             file.close()
             return data_list
         except IOError:
-            print("\nSTATUS: ERROR obtaining type data.\n")
+            print("Error: Problems obtaining type data.")
             exit()
     else:
         try:
@@ -484,7 +484,7 @@ def get_type_data():
             f.close()
             return data_list
         except IOError:
-            print("\nSTATUS: ERROR obtaining type data.\n")
+            print("Error: Problems obtaining type data.")
             exit()
 
 
@@ -521,7 +521,7 @@ def add_new_type(object_name, type_name):
             f.write("\n")
         f.close()
     except IOError:
-        print("\nSTATUS: ERROR obtaining type data.\n")
+        print("Error: Problems obtaining type data.")
         exit()
     return True
 
@@ -626,7 +626,7 @@ def update_type_data(data):
             f.write("\n")
         f.close()
     except IOError:
-        print("\nSTATUS: ERROR obtaining type data.\n")
+        print("Error: Problems obtaining type data.")
         exit()
     return True
 
