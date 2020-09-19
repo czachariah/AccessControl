@@ -58,7 +58,13 @@ def main():
             set_domain(sys.argv[2], sys.argv[3])
 
     elif sys.argv[1] == "DomainInfo":
-        print("DomainInfo Command!")
+        if len(sys.argv) < 3:
+            print("\nSTATUS: ERROR! Domain name missing.\n")
+            exit()
+        elif len(sys.argv) > 3:
+            print("\nSTATUS: ERROR! Please check the input and try again.\n")
+        else:
+            get_domain_info(sys.argv[2])
 
     elif sys.argv[1] == "SetType":
         print("SetType Command!")
@@ -388,6 +394,34 @@ def update_domain_data(data):
         print("\nSTATUS: ERROR obtaining domain data.\n")
         exit()
     return True
+
+
+# method used to get all the users of a specific domain
+def get_domain_info(domain):
+    if check_for_domain(domain):
+        print_users_in_domain(domain)
+
+
+def print_users_in_domain(domain):
+    data_list = get_domain_data()
+    if not data_list:
+        # data empty
+        return False
+    else:
+        # look through data
+        x = 0
+        while x < len(data_list):
+            if data_list[x] == domain:
+                x += 1
+                z = int(data_list[x])
+                x += 1
+                while z > 0:
+                    print(data_list[x])
+                    z -= 1
+                    x += 1
+                return
+            x += 1
+            x = x + int(data_list[x]) + 1
 
 
 # runs the program by calling the main() method
