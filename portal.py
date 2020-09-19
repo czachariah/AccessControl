@@ -20,7 +20,7 @@ def main():
     # make sure the command given is valid
     if sys.argv[1] == "AddUser":
         if len(sys.argv) < 3:
-            print("\nSTATUS: ERROR! Username missing.\n")
+            print("\nSTATUS: ERROR! Username and Password missing.\n")
             exit()
         elif len(sys.argv) > 4:
             print("\nSTATUS: ERROR! Please make sure there are no spaces in the username or password.\n")
@@ -33,7 +33,7 @@ def main():
 
     elif sys.argv[1] == "Authenticate":
         if len(sys.argv) < 3:
-            print("\nSTATUS: ERROR! Username missing.\n")
+            print("\nSTATUS: ERROR! Username and Password missing.\n")
             exit()
         elif len(sys.argv) > 4:
             print("\nSTATUS: ERROR! Please make sure there are no spaces in the username or password.\n")
@@ -46,7 +46,7 @@ def main():
 
     elif sys.argv[1] == "SetDomain":
         if len(sys.argv) < 3:
-            print("\nSTATUS: ERROR! Username missing.\n")
+            print("\nSTATUS: ERROR! Username and Domain missing.\n")
             exit()
         elif len(sys.argv) > 4:
             print("\nSTATUS: ERROR! Please check the input and try again.\n")
@@ -59,7 +59,7 @@ def main():
 
     elif sys.argv[1] == "DomainInfo":
         if len(sys.argv) < 3:
-            print("\nSTATUS: ERROR! Domain name missing.\n")
+            print("\nSTATUS: ERROR! Domain missing.\n")
             exit()
         elif len(sys.argv) > 3:
             print("\nSTATUS: ERROR! Please check the input and try again.\n")
@@ -67,10 +67,26 @@ def main():
             get_domain_users(sys.argv[2])
 
     elif sys.argv[1] == "SetType":
-        print("SetType Command!")
+        if len(sys.argv) < 3:
+            print("\nSTATUS: ERROR! Domain and Type missing.\n")
+            exit()
+        elif len(sys.argv) > 4:
+            print("\nSTATUS: ERROR! Please check inputs and try again.\n")
+            exit()
+        elif len(sys.argv) == 3:
+            print("\nSTATUS: ERROR! Type missing.\n")
+            exit()
+        else:
+            set_type(sys.argv[2], sys.argv[3])
 
     elif sys.argv[1] == "TypeInfo":
-        print("TypeInfo Command!")
+        if len(sys.argv) < 3:
+            print("\nSTATUS: ERROR! Type missing.\n")
+            exit()
+        elif len(sys.argv) > 3:
+            print("\nSTATUS: ERROR! Please check the input and try again.\n")
+        else:
+            get_type_objects(sys.argv[2])
 
     elif sys.argv[1] == "AddAccess":
         print("AddAccess Command!")
@@ -205,9 +221,6 @@ def set_domain(username, domain):
             # existing data, find domain or make new one
             if does_domain_exist(domain):
                 # user and domain exist
-                # check if the user is already part of the domain
-                # if true, do nothing and print SUCCESS
-                # if false, add user and print SUCCESS
                 if check_if_user_in_domain(username, domain):
                     print("\nSTATUS: SUCCESS! User added to domain.\n")
                 else:
@@ -225,7 +238,7 @@ def set_domain(username, domain):
 def get_domain_data():
     dir_name = os.path.dirname(os.path.abspath(__file__))
 
-    # look for UserData.txt file
+    # look for DomainData.txt file
     domain_data = os.path.join(dir_name, "DomainData" + "." + "txt")
 
     # list to be returned
@@ -360,7 +373,7 @@ def insert_user_into_domain(username, domain):
         return False
 
 
-# method to udpate the domain info and file once a new user is added
+# method to update the domain info in file once a new user is added
 def update_domain_data(data):
     # insert new user into the list
     data_list = data
@@ -411,6 +424,230 @@ def print_users_in_domain(domain):
         x = 0
         while x < len(data_list):
             if data_list[x] == domain:
+                x += 1
+                z = int(data_list[x])
+                x += 1
+                while z > 0:
+                    print(data_list[x])
+                    z -= 1
+                    x += 1
+                return
+            x += 1
+            x = x + int(data_list[x]) + 1
+
+
+# method will be used in order set objects to types
+def set_type(object_name, type_name):
+    data_list = get_type_data()
+    if not data_list:
+        # there is no domain data, add first entry
+        add_new_type(object_name, type_name)
+        print("\nSTATUS: SUCCESS! Type updated.\n")
+    else:
+        # existing data, find domain or make new one
+        if does_type_exist(type_name):
+            # type exists
+            if check_if_object_in_type(object_name, type_name):
+                print("\nSTATUS: SUCCESS! Type updated.\n")
+            else:
+                insert_object_into_type(object_name, type_name)
+                print("\nSTATUS: SUCCESS! Type updated.\n")
+        else:
+            # there is no type entry, so add it
+            add_new_type(object_name, type_name)
+            print("\nSTATUS: SUCCESS! Type updated.\n")
+
+
+# method will be used in order to get data about Types
+def get_type_data():
+    dir_name = os.path.dirname(os.path.abspath(__file__))
+
+    # look for TypeData.txt file
+    type_data = os.path.join(dir_name, "TypeData" + "." + "txt")
+
+    # list to be returned
+    data_list = list()
+    if os.path.exists(type_data):
+        try:
+            file = open("TypeData.txt", "r")
+            for line in file:
+                for word in line.replace("\r", "").replace("\n", "").split():
+                    data_list.append(word)
+            file.close()
+            return data_list
+        except IOError:
+            print("\nSTATUS: ERROR obtaining type data.\n")
+            exit()
+    else:
+        try:
+            f = open("TypeData.txt", "a+")
+            f.close()
+            return data_list
+        except IOError:
+            print("\nSTATUS: ERROR obtaining type data.\n")
+            exit()
+
+
+# method to add a type to the type data
+def add_new_type(object_name, type_name):
+    # insert new user into the list
+    data_list = get_type_data()
+
+    data_list.append(type_name)
+    data_list.append(str(1))
+    data_list.append(object_name)
+
+    # remove the current file
+    dir_name = os.path.dirname(os.path.abspath(__file__))
+    type_data = os.path.join(dir_name, "TypeData" + "." + "txt")
+    os.remove(type_data)
+
+    try:
+        f = open("TypeData.txt", "a+")
+        x = 0
+        while x < len(data_list):
+            f.write(str(data_list[x]))  # writes in the type
+            f.write("\t")
+            x += 1
+            f.write(data_list[x])  # writes in number of objects in type
+            f.write("\n")
+            i = int(data_list[x])
+            x += 1
+            while i > 0:
+                f.write(str(data_list[x]))  # writes in the next object
+                f.write("\n")
+                x += 1
+                i -= 1
+            f.write("\n")
+        f.close()
+    except IOError:
+        print("\nSTATUS: ERROR obtaining type data.\n")
+        exit()
+    return True
+
+
+# method will check if a specific type already exists
+def does_type_exist(type_name):
+    data_list = get_type_data()
+    if not data_list:
+        # data empty
+        return False
+    else:
+        # look through data
+        x = 0
+        while x < len(data_list):
+            if data_list[x] == type_name:
+                return True
+            x += 1
+            x = x + int(data_list[x]) + 1
+        return False
+
+
+# method will check if an object is already part of a type
+def check_if_object_in_type(object_name, type_name):
+    data_list = get_type_data()
+    if not data_list:
+        # data empty
+        return False
+    else:
+        # look through data
+        x = 0
+        while x < len(data_list):
+            if data_list[x] == type_name:
+                x += 1
+                z = int(data_list[x])
+                x += 1
+                while z > 0:
+                    if data_list[x] == object_name:
+                        return True
+                    z -= 1
+                    x += 1
+                return False
+            x += 1
+            x = x + int(data_list[x]) + 1
+        return False
+
+
+# method will add new objects to an existing type
+def insert_object_into_type(object_name, type_name):
+    data_list = get_type_data()
+    if not data_list:
+        # data empty
+        return False
+    else:
+        # look through data
+        x = 0
+        while x < len(data_list):
+            if data_list[x] == type_name:
+                # change the number of object
+                x += 1
+                numb = int(data_list[x])
+                data_list[x] = str(numb + 1)
+
+                # insert object
+                x += 1
+                data_list.insert(x, object_name)
+
+                # update the file
+                update_type_data(data_list)
+                return True
+
+            x += 1
+            x = x + int(data_list[x]) + 1
+        return False
+
+
+# method to update the type info in file once a new object is added
+def update_type_data(data):
+    # insert new user into the list
+    data_list = data
+
+    # remove the current file
+    dir_name = os.path.dirname(os.path.abspath(__file__))
+    type_data = os.path.join(dir_name, "TypeData" + "." + "txt")
+    os.remove(type_data)
+
+    try:
+        f = open("TypeData.txt", "a+")
+        x = 0
+        while x < len(data_list):
+            f.write(str(data_list[x]))  # writes in the type
+            f.write("\t")
+            x += 1
+            f.write(data_list[x])  # writes in number of object in type
+            f.write("\n")
+            i = int(data_list[x])
+            x += 1
+            while i > 0:
+                f.write(str(data_list[x]))  # writes in the next object
+                f.write("\n")
+                x += 1
+                i -= 1
+            f.write("\n")
+        f.close()
+    except IOError:
+        print("\nSTATUS: ERROR obtaining type data.\n")
+        exit()
+    return True
+
+
+# method used to get all the objects of a specific type
+def get_type_objects(type_name):
+    if does_type_exist(type_name):
+        print_objects_in_type(type_name)
+
+
+# method to print out all the objects in a specific type
+def print_objects_in_type(type_name):
+    data_list = get_type_data()
+    if not data_list:
+        # data empty
+        return False
+    else:
+        # look through data
+        x = 0
+        while x < len(data_list):
+            if data_list[x] == type_name:
                 x += 1
                 z = int(data_list[x])
                 x += 1
