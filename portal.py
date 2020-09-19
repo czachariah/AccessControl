@@ -64,7 +64,7 @@ def main():
         elif len(sys.argv) > 3:
             print("\nSTATUS: ERROR! Please check the input and try again.\n")
         else:
-            get_domain_info(sys.argv[2])
+            get_domain_users(sys.argv[2])
 
     elif sys.argv[1] == "SetType":
         print("SetType Command!")
@@ -83,9 +83,9 @@ def main():
         exit()
 
 
-# method used to add new Users
+# method used to add new users
 def add_user(username, password):
-    if check_for_user(username):
+    if does_user_exist(username):
         print("\nSTATUS: ERROR! User already exists.\n")
     else:
         # user not found in the data, so now add the user
@@ -126,7 +126,7 @@ def get_user_data():
 
 
 # method to check whether the user has already been added
-def check_for_user(username):
+def does_user_exist(username):
     data_list = get_user_data()
     if not data_list:
         # list is empty, so user is not found
@@ -166,9 +166,9 @@ def update_user_data(username, password):
     return True
 
 
-# method used to add new Users
+# method used to authenticate users
 def authenticate(username, password):
-    if check_for_user(username):
+    if does_user_exist(username):
         if check_user_and_pass(username, password):
             print("\nSTATUS: SUCCESS! User authenticated.\n")
         else:
@@ -195,15 +195,15 @@ def check_user_and_pass(username, password):
 
 # method used to create new domains
 def set_domain(username, domain):
-    if check_for_user(username):
+    if does_user_exist(username):
         data_list = get_domain_data()
         if not data_list:
             # there is no domain data, add first entry
-            add_to_domain_data(username, domain, 1)
+            add_new_domain(username, domain)
             print("\nSTATUS: SUCCESS! User added to domain.\n")
         else:
             # existing data, find domain or make new one
-            if check_for_domain(domain):
+            if does_domain_exist(domain):
                 # user and domain exist
                 # check if the user is already part of the domain
                 # if true, do nothing and print SUCCESS
@@ -215,7 +215,7 @@ def set_domain(username, domain):
                     print("\nSTATUS: SUCCESS! User added to domain.\n")
             else:
                 # there is no domain entry for, so update it
-                add_to_domain_data(username, domain, 1)
+                add_new_domain(username, domain)
                 print("\nSTATUS: SUCCESS! User added to domain.\n")
     else:
         print("\nSTATUS: ERROR! User not found.\n")
@@ -251,16 +251,14 @@ def get_domain_data():
             exit()
 
 
-# method to add to the domain data (new entries)
-def add_to_domain_data(username, domain, add_new):
+# method to add new domain entries
+def add_new_domain(username, domain):
     # insert new user into the list
     data_list = get_domain_data()
 
-    # addNew = 1 = means new domain
-    if add_new == 1:
-        data_list.append(domain)
-        data_list.append(str(1))
-        data_list.append(username)
+    data_list.append(domain)
+    data_list.append(str(1))
+    data_list.append(username)
 
     # remove the current file
     dir_name = os.path.dirname(os.path.abspath(__file__))
@@ -292,7 +290,7 @@ def add_to_domain_data(username, domain, add_new):
 
 
 # method to check if a domain exists
-def check_for_domain(domain):
+def does_domain_exist(domain):
     data_list = get_domain_data()
     if not data_list:
         # data empty
@@ -333,7 +331,7 @@ def check_if_user_in_domain(username, domain):
         return False
 
 
-# this method will add users into a domain group
+# this method will add users into an existing domain group
 def insert_user_into_domain(username, domain):
     data_list = get_domain_data()
     if not data_list:
@@ -362,7 +360,7 @@ def insert_user_into_domain(username, domain):
         return False
 
 
-# method to update (after an insert) to the domain
+# method to udpate the domain info and file once a new user is added
 def update_domain_data(data):
     # insert new user into the list
     data_list = data
@@ -397,11 +395,12 @@ def update_domain_data(data):
 
 
 # method used to get all the users of a specific domain
-def get_domain_info(domain):
-    if check_for_domain(domain):
+def get_domain_users(domain):
+    if does_domain_exist(domain):
         print_users_in_domain(domain)
 
 
+# method to print out all the users in a specific domain
 def print_users_in_domain(domain):
     data_list = get_domain_data()
     if not data_list:
