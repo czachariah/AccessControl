@@ -124,8 +124,8 @@ def get_user_data():
         try:
             file = open("UserData.txt", "r")
             for line in file:
-                for word in line.replace("\r", "").replace("\n", "").split():
-                    data_list.append(word)
+                line = line.split("\n")[0]
+                data_list.append(line)
             file.close()
             return data_list
         except IOError:
@@ -172,7 +172,7 @@ def update_user_data(username, password):
         f = open("UserData.txt", "a+")
         for x in range(0, len(data_list), 2):
             f.write(str(data_list[x]))
-            f.write("\t")
+            f.write("\n")
             f.write(str(data_list[x + 1]))
             f.write("\n")
         f.close()
