@@ -19,43 +19,55 @@ def main():
 
     # make sure the command given is valid
     if sys.argv[1] == "AddUser":
-        if len(sys.argv) < 3:
-            print("Error: Username and Password missing.")
+        if len(sys.argv) <= 3:
+            print("Error: Missing arguments.")
             exit()
         elif len(sys.argv) > 4:
-            print("Error: Please make sure there are no spaces in the username or password.")
+            print("Error: Too many arguments given.")
             exit()
         else:
-            if len(sys.argv) == 4:
-                add_user(sys.argv[2], sys.argv[3])
-            else:
+            if sys.argv[2] == "":
+                print("Error: Username cannot be empty.")
+                exit()
+
+            if sys.argv[3] == "":
                 add_user(sys.argv[2], "@#$EMPTY_STRING@#$")
+            else:
+                add_user(sys.argv[2], sys.argv[3])
 
     elif sys.argv[1] == "Authenticate":
-        if len(sys.argv) < 3:
-            print("Error: Username and Password missing.")
+        if len(sys.argv) <= 3:
+            print("Error: Missing arguments.")
             exit()
         elif len(sys.argv) > 4:
-            print("Error: Please make sure there are no spaces in the username or password.")
+            print("Error: Too many arguments given.")
             exit()
         else:
-            if len(sys.argv) == 4:
-                authenticate(sys.argv[2], sys.argv[3])
-            else:
+            if sys.argv[2] == "":
+                print("Error: Username cannot be empty.")
+                exit()
+
+            if sys.argv[3] == "":
                 authenticate(sys.argv[2], "@#$EMPTY_STRING@#$")
+            else:
+                authenticate(sys.argv[2], sys.argv[3])
 
     elif sys.argv[1] == "SetDomain":
-        if len(sys.argv) < 3:
-            print("Error: Username and Domain missing.")
+        if len(sys.argv) <= 3:
+            print("Error: Missing arguments.")
             exit()
         elif len(sys.argv) > 4:
-            print("Error: Please check the input and try again.")
-            exit()
-        elif len(sys.argv) == 3:
-            print("Error: Missing domain.")
+            print("Error: Too many arguments given.")
             exit()
         else:
-            set_domain(sys.argv[2], sys.argv[3])
+            if sys.argv[2] == "":
+                print("Error: Username is empty.")
+                exit()
+            elif sys.argv[3] == "" :
+                print("Error: Domain name is empty.")
+                exit()
+            else:
+                set_domain(sys.argv[2], sys.argv[3])
 
     elif sys.argv[1] == "DomainInfo":
         if len(sys.argv) < 3:
@@ -247,8 +259,8 @@ def get_domain_data():
         try:
             file = open("DomainData.txt", "r")
             for line in file:
-                for word in line.replace("\r", "").replace("\n", "").split():
-                    data_list.append(word)
+                line = line.split("\n")[0]
+                data_list.append(line)
             file.close()
             return data_list
         except IOError:
@@ -283,7 +295,7 @@ def add_new_domain(username, domain):
         x = 0
         while x < len(data_list):
             f.write(str(data_list[x]))  # writes in the domain
-            f.write("\t")
+            f.write("\n")
             x += 1
             f.write(data_list[x])  # writes in number of users in domain
             f.write("\n")
@@ -294,7 +306,6 @@ def add_new_domain(username, domain):
                 f.write("\n")
                 x += 1
                 i -= 1
-            f.write("\n")
         f.close()
     except IOError:
         print("Error: Problems obtaining domain data.")
@@ -388,7 +399,7 @@ def update_domain_data(data):
         x = 0
         while x < len(data_list):
             f.write(str(data_list[x]))  # writes in the domain
-            f.write("\t")
+            f.write("\n")
             x += 1
             f.write(data_list[x])  # writes in number of users in domain
             f.write("\n")
@@ -399,7 +410,6 @@ def update_domain_data(data):
                 f.write("\n")
                 x += 1
                 i -= 1
-            f.write("\n")
         f.close()
     except IOError:
         print("Error: Problems obtaining domain data.")
