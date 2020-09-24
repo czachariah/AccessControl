@@ -76,7 +76,11 @@ def main():
         elif len(sys.argv) > 3:
             print("Error: Please check the input and try again.")
         else:
-            get_domain_users(sys.argv[2])
+            if sys.argv[2] == "":
+                print("Error: Username is empty.")
+                exit()
+            else:
+                get_domain_users(sys.argv[2])
 
     elif sys.argv[1] == "SetType":
         if len(sys.argv) < 3:
