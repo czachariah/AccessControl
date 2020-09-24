@@ -70,11 +70,11 @@ def main():
                 set_domain(sys.argv[2], sys.argv[3])
 
     elif sys.argv[1] == "DomainInfo":
-        if len(sys.argv) < 3:
-            print("Error: Domain missing.")
+        if len(sys.argv) <= 2:
+            print("Error: Missing arguments.")
             exit()
         elif len(sys.argv) > 3:
-            print("Error: Please check the input and try again.")
+            print("Error: Too many arguments given.")
         else:
             if sys.argv[2] == "":
                 print("Error: Domain name is empty.")
@@ -111,7 +111,23 @@ def main():
             get_type_objects(sys.argv[2])
 
     elif sys.argv[1] == "AddAccess":
-        print("AddAccess Command!")
+        if len(sys.argv) <= 4:
+            print("Error: Arguments missing.")
+            exit()
+        elif len(sys.argv) > 5:
+            print("Error: Too many arguments given.")
+            exit()
+        else:
+            if sys.argv[2] == "":
+                print("Error: Operation name is empty.")
+                exit()
+            if sys.argv[3] == "":
+                print("Error: Domain name is empty.")
+                exit()
+            if sys.argv[4] == "":
+                print("Error: Type name is empty.")
+                exit()
+            add_access(sys.argv[2], sys.argv[3], sys.argv[4])
 
     elif sys.argv[1] == "CanAccess":
         print("CanAccess Command!")
@@ -676,6 +692,121 @@ def print_objects_in_type(type_name):
                 return
             x += 1
             x = x + int(data_list[x]) + 1
+
+
+# method to add an access right
+def add_access(op_name, domain_name, type_name):
+    if not does_domain_exist(domain_name):
+        add_new_empty_domain(domain_name)
+    if not does_type_exist(type_name):
+        add_new_empty_type(type_name)
+    set_access_right(op_name, domain_name, type_name)
+
+
+# method will set the access correctly in the data
+def set_access_right(op_name, domain_name, type_name):
+    print("Setting right")
+
+
+# method will get the current access data
+def get_access_data():
+    dir_name = os.path.dirname(os.path.abspath(__file__))
+
+    # look for TypeData.txt file
+    access_data = os.path.join(dir_name, "AccessData" + "." + "txt")
+
+    # list to be returned
+    data_list = list()
+    if os.path.exists(access_data):
+        try:
+            file = open("TypeData.txt", "r")
+            for line in file:
+                line = line.split("\n")[0]
+                data_list.append(line)
+            file.close()
+            return data_list
+        except IOError:
+            print("Error: Problems obtaining access data.")
+            exit()
+    else:
+        try:
+            f = open("TypeData.txt", "a+")
+            f.close()
+            return data_list
+        except IOError:
+            print("Error: Problems obtaining access data.")
+            exit()
+
+
+# method will make a new empty domain
+def add_new_empty_domain(domain_name):
+    data_list = get_domain_data()
+
+    data_list.append(domain_name)
+    data_list.append(str(0))
+
+    # remove the current file
+    dir_name = os.path.dirname(os.path.abspath(__file__))
+    domain_data = os.path.join(dir_name, "DomainData" + "." + "txt")
+    os.remove(domain_data)
+
+    try:
+        f = open("DomainData.txt", "a+")
+        x = 0
+        while x < len(data_list):
+            f.write(str(data_list[x]))  # writes in the domain
+            f.write("\n")
+            x += 1
+            f.write(data_list[x])  # writes in number of users in domain
+            f.write("\n")
+            i = int(data_list[x])
+            x += 1
+            while i > 0:
+                f.write(str(data_list[x]))  # writes in the next user
+                f.write("\n")
+                x += 1
+                i -= 1
+        f.close()
+    except IOError:
+        print("Error: Problems obtaining domain data.")
+        exit()
+    return True
+
+
+# method will make a new empty type
+def add_new_empty_type(type_name):
+    # insert new user into the list
+    data_list = get_type_data()
+
+    data_list.append(type_name)
+    data_list.append(str(0))
+
+    # remove the current file
+    dir_name = os.path.dirname(os.path.abspath(__file__))
+    type_data = os.path.join(dir_name, "TypeData" + "." + "txt")
+    os.remove(type_data)
+
+    try:
+        f = open("TypeData.txt", "a+")
+        x = 0
+        while x < len(data_list):
+            f.write(str(data_list[x]))  # writes in the type
+            f.write("\n")
+            x += 1
+            f.write(data_list[x])  # writes in number of objects in type
+            f.write("\n")
+            i = int(data_list[x])
+            x += 1
+            while i > 0:
+                f.write(str(data_list[x]))  # writes in the next object
+                f.write("\n")
+                x += 1
+                i -= 1
+        f.close()
+    except IOError:
+        print("Error: Problems obtaining type data.")
+        exit()
+    return True
 
 
 # runs the program by calling the main() method
