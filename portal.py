@@ -63,7 +63,7 @@ def main():
             if sys.argv[2] == "":
                 print("Error: Username is empty.")
                 exit()
-            elif sys.argv[3] == "" :
+            elif sys.argv[3] == "":
                 print("Error: Domain name is empty.")
                 exit()
             else:
@@ -77,31 +77,37 @@ def main():
             print("Error: Please check the input and try again.")
         else:
             if sys.argv[2] == "":
-                print("Error: Username is empty.")
+                print("Error: Domain name is empty.")
                 exit()
             else:
                 get_domain_users(sys.argv[2])
 
     elif sys.argv[1] == "SetType":
-        if len(sys.argv) < 3:
-            print("Error: Domain and Type missing.")
+        if len(sys.argv) <= 3:
+            print("Error: Arguments missing.")
             exit()
         elif len(sys.argv) > 4:
-            print("Error: Please check inputs and try again.")
-            exit()
-        elif len(sys.argv) == 3:
-            print("Error: Type missing.")
+            print("Error: Too many arguments given.")
             exit()
         else:
+            if sys.argv[2] == "":
+                print("Error: Object name is empty.")
+                exit()
+            if sys.argv[3] == "":
+                print("Error: Item name is empty.")
+                exit()
             set_type(sys.argv[2], sys.argv[3])
 
     elif sys.argv[1] == "TypeInfo":
         if len(sys.argv) < 3:
-            print("Error: Type missing.")
+            print("Error: Arguments missing.")
             exit()
         elif len(sys.argv) > 3:
-            print("Error: Please check the input and try again.")
+            print("Error: Too many arguments given.")
         else:
+            if sys.argv[2] == "":
+                print("Error: Type name is empty")
+                exit()
             get_type_objects(sys.argv[2])
 
     elif sys.argv[1] == "AddAccess":
@@ -485,8 +491,8 @@ def get_type_data():
         try:
             file = open("TypeData.txt", "r")
             for line in file:
-                for word in line.replace("\r", "").replace("\n", "").split():
-                    data_list.append(word)
+                line = line.split("\n")[0]
+                data_list.append(line)
             file.close()
             return data_list
         except IOError:
@@ -521,7 +527,7 @@ def add_new_type(object_name, type_name):
         x = 0
         while x < len(data_list):
             f.write(str(data_list[x]))  # writes in the type
-            f.write("\t")
+            f.write("\n")
             x += 1
             f.write(data_list[x])  # writes in number of objects in type
             f.write("\n")
@@ -532,7 +538,6 @@ def add_new_type(object_name, type_name):
                 f.write("\n")
                 x += 1
                 i -= 1
-            f.write("\n")
         f.close()
     except IOError:
         print("Error: Problems obtaining type data.")
@@ -626,7 +631,7 @@ def update_type_data(data):
         x = 0
         while x < len(data_list):
             f.write(str(data_list[x]))  # writes in the type
-            f.write("\t")
+            f.write("\n")
             x += 1
             f.write(data_list[x])  # writes in number of object in type
             f.write("\n")
@@ -637,7 +642,6 @@ def update_type_data(data):
                 f.write("\n")
                 x += 1
                 i -= 1
-            f.write("\n")
         f.close()
     except IOError:
         print("Error: Problems obtaining type data.")
