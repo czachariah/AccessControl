@@ -130,7 +130,23 @@ def main():
             add_access(sys.argv[2], sys.argv[3], sys.argv[4])
 
     elif sys.argv[1] == "CanAccess":
-        print("CanAccess Command!")
+        if len(sys.argv) <= 4:
+            print("Error: Arguments missing.")
+            exit()
+        elif len(sys.argv) > 5:
+            print("Error: Too many arguments given.")
+            exit()
+        else:
+            if sys.argv[2] == "":
+                print("Error: Operation name is empty.")
+                exit()
+            if sys.argv[3] == "":
+                print("Error: User name is empty.")
+                exit()
+            if sys.argv[4] == "":
+                print("Error: Object name is empty.")
+                exit()
+            can_access(sys.argv[2], sys.argv[3], sys.argv[4])
 
     else:
         print("Error: Please use a proper command.")
@@ -938,6 +954,42 @@ def op_has_dom_and_type_already(op_name, dom_name, type_name):
             x += 1
             x = x + (2 * (int(data_list[x]))) + 1
         return False
+
+
+# method checks if a user has access to a specific object
+def can_access(op_name, user_name, object_name):
+    if does_operation_exist(op_name):
+        data_list = get_access_data()
+        if not data_list:
+            # data empty
+            print("Error: Access Denied.")
+            exit()
+        else:
+            # look through data
+            x = 0
+            while x < len(data_list):
+                if data_list[x] == op_name:
+                    x += 1
+                    z = int(data_list[x])
+                    x += 1
+                    while z > 0:
+                        dom = data_list[x]
+                        x += 1
+                        t_name = data_list[x]
+                        if check_if_user_in_domain(user_name, dom) is True and check_if_object_in_type(object_name, t_name) is True:
+                            print("Success")
+                            exit()
+                        z -= 1
+                        x += 1
+                    print("Error: Access Denied.")
+                    exit()
+                x += 1
+                x = x + 2 * (int(data_list[x])) + 1
+            print("Error: Access Denied.")
+            exit()
+    else:
+        print("Error: Access Denied.")
+        exit()
 
 
 # runs the program by calling the main() method
