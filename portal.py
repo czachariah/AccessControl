@@ -94,7 +94,7 @@ def main():
                 print("Error: Object name is empty.")
                 exit()
             if sys.argv[3] == "":
-                print("Error: Item name is empty.")
+                print("Error: Type name is empty.")
                 exit()
             set_type(sys.argv[2], sys.argv[3])
 
