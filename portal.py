@@ -705,7 +705,110 @@ def add_access(op_name, domain_name, type_name):
 
 # method will set the access correctly in the data
 def set_access_right(op_name, domain_name, type_name):
-    print("Setting right")
+    if does_operation_exist(op_name):
+        if op_has_dom_and_type_already(op_name, domain_name, type_name):
+            print("Success")
+        else:
+            add_to_existing_operation(op_name, domain_name, type_name)
+            print("Success")
+    else:
+        add_new_operation(op_name, domain_name, type_name)
+        print("Success")
+
+
+# method checks if a specific operation already exists
+def does_operation_exist(op_name):
+    data_list = get_access_data()
+    if not data_list:
+        # data empty
+        return False
+    else:
+        # look through data
+        x = 0
+        while x < len(data_list):
+            if data_list[x] == op_name:
+                return True
+            x += 1
+            x = x + (2*(int(data_list[x]))) + 1
+        return False
+
+
+# method will add a new operation
+def add_new_operation(op_name, domain_name, type_name):
+    # insert new user into the list
+    data_list = get_access_data()
+
+    data_list.append(op_name)
+    data_list.append(str(1))
+    data_list.append(domain_name)
+    data_list.append(type_name)
+
+    update_access_data(data_list)
+
+
+# method will add domain and type to an existing operation
+def add_to_existing_operation(op_name, domain_name, type_name):
+    data_list = get_access_data()
+    if not data_list:
+        # data empty
+        return False
+    else:
+        # look through data
+        x = 0
+        while x < len(data_list):
+            if data_list[x] == op_name:
+                # change the number of object
+                x += 1
+                numb = int(data_list[x])
+                data_list[x] = str(numb + 1)
+
+                # insert object
+                x += 1
+                data_list.insert(x, type_name)
+                data_list.insert(x, domain_name)
+
+                # update the file
+                update_access_data(data_list)
+                return True
+
+            x += 1
+            x = x + 2*(int(data_list[x])) + 1
+        return False
+
+
+# method will update the operation data
+def update_access_data(access_data):
+    data_list = access_data
+
+    # remove the current file
+    dir_name = os.path.dirname(os.path.abspath(__file__))
+    access_data = os.path.join(dir_name, "AccessData" + "." + "txt")
+    os.remove(access_data)
+
+    try:
+        f = open("AccessData.txt", "a+")
+        x = 0
+        while x < len(data_list):
+            f.write(str(data_list[x]))  # writes in the operation
+            f.write("\n")
+            x += 1
+            f.write(data_list[x])  # writes in number of groups for that operation (group = domain + type)
+            f.write("\n")
+            i = int(data_list[x])
+            x += 1
+            while i > 0:
+                f.write(str(data_list[x]))  # writes in the next object
+                f.write("\n")
+                x += 1
+                f.write(str(data_list[x]))  # writes in the next object
+                f.write("\n")
+                x += 1
+                i -= 1
+        f.close()
+    except IOError:
+        print("Error: Problems obtaining access data.")
+        exit()
+    return True
 
 
 # method will get the current access data
@@ -719,7 +822,7 @@ def get_access_data():
     data_list = list()
     if os.path.exists(access_data):
         try:
-            file = open("TypeData.txt", "r")
+            file = open("AccessData.txt", "r")
             for line in file:
                 line = line.split("\n")[0]
                 data_list.append(line)
@@ -730,7 +833,7 @@ def get_access_data():
             exit()
     else:
         try:
-            f = open("TypeData.txt", "a+")
+            f = open("AccessData.txt", "a+")
             f.close()
             return data_list
         except IOError:
@@ -807,6 +910,34 @@ def add_new_empty_type(type_name):
         print("Error: Problems obtaining type data.")
         exit()
     return True
+
+
+# method checks if the domain and type pair already has the operation
+def op_has_dom_and_type_already(op_name, dom_name, type_name):
+    data_list = get_access_data()
+    if not data_list:
+        # data empty
+        return False
+    else:
+        # look through data
+        x = 0
+        while x < len(data_list):
+            if data_list[x] == op_name:
+                x += 1
+                z = int(data_list[x])
+                x += 1
+                while z > 0:
+                    dom = data_list[x]
+                    x += 1
+                    t_name = data_list[x]
+                    if dom == dom_name and t_name == type_name:
+                        return True
+                    z -= 1
+                    x += 1
+                return False
+            x += 1
+            x = x + (2 * (int(data_list[x]))) + 1
+        return False
 
 
 # runs the program by calling the main() method
